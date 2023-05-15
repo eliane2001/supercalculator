@@ -1,0 +1,40 @@
+name: lint
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+jobs:
+  static_analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run static analysis with semgrep
+        uses: returntocorp/semgrep-action@v1
+
+  dockerfile_analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run Dockerfile analysis with hadolint
+        run: |
+          # Install hadolint if not already installed
+          if ! command -v hadolint &> /dev/null; then
+            wget -O /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
+            chmod +x /usr/local/bin/hadolint
+          fi
+          hadolint Dockerfile
+
+  super_linter:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run super-linter
+        uses: github/super-linter@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
