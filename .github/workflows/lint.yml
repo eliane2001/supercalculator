@@ -31,6 +31,7 @@ jobs:
           hadolint ./super_calculator/Dockerfile || true
 
   super_linter:
+    needs: [static_analysis, dockerfile_analysis]
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
