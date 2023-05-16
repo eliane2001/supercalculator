@@ -26,11 +26,22 @@ jobs:
             wget -O /usr/local/bin/hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
             chmod +x /usr/local/bin/hadolint
           fi
-          hadolint Dockerfile
+          hadolint __MACOSX/super_calculator/._Dockerfile
+
+ 
+  super_calculator:
+    runs-on: ubuntu-latest
+    needs: [static_analysis, dockerfile_analysis]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run SuperCalculator 3
+        run: ./run_super_calculator.sh
 
   super_linter:
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: [super_calculator]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
