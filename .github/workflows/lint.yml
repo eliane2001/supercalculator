@@ -2,7 +2,9 @@ name: lint
 
 on:
   pull_request:
+    types: [opened, synchronize]
   push:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -28,20 +30,9 @@ jobs:
           fi
           hadolint __MACOSX/super_calculator/._Dockerfile
 
- 
-  super_calculator:
-    runs-on: ubuntu-latest
-    needs: [static_analysis, dockerfile_analysis]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Run SuperCalculator 3
-        run: ./run_super_calculator.sh
-
   super_linter:
-    runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    needs: [super_calculator]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
